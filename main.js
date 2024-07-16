@@ -22,29 +22,33 @@ window.addEventListener('DOMContentLoaded', function () {
         const scene = new BABYLON.Scene(engine);
         // Create a camera
         const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,1,-1), scene);
-        // Set the clear color to transparent
+        
+        // Set the background color to transparent
         scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
         // Load the .glb file
         BABYLON.SceneLoader.Append("", "Babylon-Model-Viewer/Assets/MikaelK.glb", scene, function (scene) {
-            // Do not create default camera or light again
-            // scene.createDefaultCameraOrLight(true, true, true);
-            
+
+            // Set our just created camera as scenes active camera.
             scene.activeCamera = camera;
 
-            scene.activeCamera.alpha += Math.PI;
             // Create a material and add the texture
             const material = new BABYLON.StandardMaterial("textureMaterial", scene);
             material.unlit = true;
             material.disableLighting = true;
             material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+            
+            // Reverse uv coordinates because the texture is reversed horizontally.
+            // Probably some difference between applications.
+            texture.uScale = 1; 
+            texture.vScale = -1; 
+            texture.uOffset = 0; 
+            texture.vOffset = 0; 
+
+            // The glb file does not have a texture embedded, so we load a new one here.
             const texture = new BABYLON.Texture("Babylon-Model-Viewer/Assets/color.png", scene);
-            // Adjust texture properties if needed
-            texture.uScale = 1; // Adjust to fit your model
-            texture.vScale = -1; // Adjust to fit your model
-            texture.uOffset = 0; // Adjust to fit your model
-            texture.vOffset = 0; // Adjust to fit your model
             material.diffuseTexture = texture;
+
             // Apply the material to all meshes
             scene.meshes.forEach(function (mesh) {
                 mesh.material = material;
